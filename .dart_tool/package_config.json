@@ -170,13 +170,13 @@
       "languageVersion": "3.3"
     },
     {
-      "name": "fluttershader",
+      "name": "ShaderRenderer",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-11-13T07:57:55.249335Z",
+  "generated": "2024-11-13T21:28:26.977830Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///home/sammy/flutter-development/flutter",

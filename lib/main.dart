@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_shaders/flutter_shaders.dart';
 
 late FragmentProgram fragmentProgram;
 
@@ -33,16 +34,36 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    const color = Colors.cyan;
+
     return MaterialApp(
-        home: CustomPaint(
-          painter: MyPainter(
-            Colors.green,
-            shader: fragmentProgram.fragmentShader(),
-            time: _time,
-          ),
-        )
-    );
+        home:Scaffold(
+          backgroundColor: Colors.black,
+            body: ShaderBuilder(
+              assetKey: 'shaders/FractalWorldStar.frag',
+              child: SizedBox(width: size.width,height: size.height),
+                (context,shader,child){
+                    return AnimatedSampler(
+                    (image,size,canvas){
+                      //uSize vec2 (0 to 1)
+                      shader.setFloat(0, size.width);
+                      shader.setFloat(1, size.width);
+
+                      shader.setFloat(2, color.red.toDouble() / 255);
+                      shader.setFloat(3, color.green.toDouble() / 255);
+                      shader.setFloat(4, color.blue.toDouble() / 255);
+                      shader.setFloat(5, color.alpha.toDouble() / 255);
+
+                      shader.setFloat(6, _time);
+
+                      canvas.drawPaint(Paint()..shader = shader);
+                      },
+                      child: child!,);
+            })
+      ));
   }
+
 }
 
 class MyPainter extends CustomPainter{
@@ -71,5 +92,6 @@ class MyPainter extends CustomPainter{
   }
 
   @override
-  bool shouldRepaint(MyPainter oldDelegate) => time != oldDelegate.time;
+  bool shouldRepaint(MyPainter oldDelegate) =>
+      (color != oldDelegate.color || time != oldDelegate.time);
 }
