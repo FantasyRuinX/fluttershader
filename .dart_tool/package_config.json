@@ -56,6 +56,12 @@
       "languageVersion": "3.1"
     },
     {
+      "name": "flutter_shaders",
+      "rootUri": "file:///home/sammy/.pub-cache/hosted/pub.dev/flutter_shaders-0.1.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///home/sammy/flutter-development/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -170,7 +176,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-10-29T16:49:35.100430Z",
+  "generated": "2024-11-13T07:57:55.249335Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///home/sammy/flutter-development/flutter",
