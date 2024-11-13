@@ -70,6 +70,7 @@ void main() {
 
 uniform vec2 uSize;
 uniform vec4 uColor;
+uniform float uTime;
 
 out vec4 FragColor;
 
@@ -79,8 +80,9 @@ float sdfSphere(vec2 uv, float size){
 
 void main() {
     vec2 uv = ((FlutterFragCoord() / uSize) * 2.) - 1.;
-
     vec4 colorAlphaAdded = vec4(uColor.rgb * uColor.a, uColor.a);
+    float sdf = 0.2/sdfSphere(uv,1.);
+    sdf = sin(sdf*2. + uTime) / 2.;
 
-    FragColor = colorAlphaAdded * (0.2/sdfSphere(uv,1.));
+    FragColor = colorAlphaAdded * (sdf);
 }
