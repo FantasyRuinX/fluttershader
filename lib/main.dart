@@ -20,16 +20,24 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   double _time = 0.0; // Store time for the shader
   late Ticker _ticker;
-  double pos_x = 0.0;
-  double pos_y = 0.0;
+  double posX = 0.0;
+  double posY = 0.0;
 
   //Get tap position
   void onTapDown(BuildContext context, TapDownDetails details){
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset localOffset = box.globalToLocal(details.globalPosition);
     setState(() {
-      pos_x = localOffset.dx;
-      pos_y = localOffset.dy;
+      posX = localOffset.dx;
+      posY = localOffset.dy;
+    });
+  }
+
+  //Get drag position updates
+  void onPanUpdate(DragUpdateDetails details) {
+    setState(() {
+      posX = details.localPosition.dx;
+      posY = details.localPosition.dy;
     });
   }
 
@@ -73,22 +81,24 @@ class MyAppState extends State<MyApp> {
                       shader.setFloat(6, _time);
 
                       //uTapOffset vec2 (7 - 8)
-                      shader.setFloat(7, pos_x);
-                      shader.setFloat(8, pos_y);
+                      shader.setFloat(7, posX);
+                      shader.setFloat(8, posY);
 
                       canvas.drawPaint(Paint()..shader = shader);
                       },
                       child: GestureDetector(
+                        onPanUpdate: onPanUpdate,
                         onTapDown: (TapDownDetails details) => onTapDown(context, details),
                         child: Stack(fit: StackFit.expand, children: <Widget>[
                           Container(color: Colors.white),
                           Positioned(
-                            left: pos_x,
-                            top: pos_y,
+                            left: posX,
+                            top: posY,
                             child: child!,
                           )
                         ]),
-                      ),);
+                      ),
+                    );
             })
       ));
   }
