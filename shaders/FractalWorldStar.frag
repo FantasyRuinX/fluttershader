@@ -17,9 +17,9 @@ float sdfSquare(vec2 uv){
     return length(uv.x * uv.y) + length(uv.x) + length(uv.y);
 }
 
-float sdfStar(vec2 uv){
-    float d = pow(length(uv.x*uv.y),0.4);
-    return pow(d + length(uv),1.5);
+float sdfLineWave(vec2 uv,float spd,float thickness,float frequency,float amplitude,float angle){
+    uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+    return thickness / length(uv.y + (cos((uv.x * frequency) + spd) * amplitude));
 }
 
 vec3 palette( float t ) {
@@ -67,10 +67,12 @@ void main() {
         sdf = abs(sdf);
         sdf = 0.01/sdf;
 
-        float final_sdf = sdf;
-        add_colour = palette(spd) * (final_sdf);
+        add_colour = palette(spd) * (sdf);
     }
 
-    vec4 colorAlphaAdded = vec4((uColor.rgb + add_colour) * (sdf), uColor.a);
+    vec3 final_colour = uColor.rgb + add_colour;
+    //uv = uvOriginal;
+    float final_sdf = sdf;//(0.01/length(uv.y + (sin((uv.x * 2.) + spd)))) + (0.01/length(uv.y + (cos((uv.x * 2.) + spd))));
+    vec4 colorAlphaAdded = vec4(final_colour * final_sdf, uColor.a);
     FragColor = colorAlphaAdded;
 }

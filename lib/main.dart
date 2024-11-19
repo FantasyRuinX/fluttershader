@@ -1,12 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_shaders/flutter_shaders.dart';
 
 late FragmentProgram fragmentProgram;
 
-Future<void> main() async{
-  fragmentProgram = await FragmentProgram.fromAsset('shaders/FractalWorldStar.frag');
+Future<void> main() async {
+  fragmentProgram =
+      await FragmentProgram.fromAsset('shaders/FractalWorldStar.frag');
   runApp(const MyApp());
 }
 
@@ -19,19 +19,9 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   double _time = 0.0; // Store time for the shader
-  late Ticker _ticker;
   double posX = 0.0;
   double posY = 0.0;
-
-  //Get tap position
-  void onTapDown(BuildContext context, TapDownDetails details){
-    final RenderBox box = context.findRenderObject() as RenderBox;
-    final Offset localOffset = box.globalToLocal(details.globalPosition);
-    setState(() {
-      posX = localOffset.dx;
-      posY = localOffset.dy;
-    });
-  }
+  late Ticker _ticker;
 
   //Get drag position updates
   void onPanUpdate(DragUpdateDetails details) {
@@ -41,66 +31,95 @@ class MyAppState extends State<MyApp> {
     });
   }
 
-  //Get time for uTime
   @override
   void initState() {
     super.initState();
     //Update the time every frame
     _ticker = Ticker((elapsed) {
       setState(() {
-        _time = elapsed.inMilliseconds / 1000.0; // Convert milliseconds to seconds
+        _time =
+            elapsed.inMilliseconds / 1000.0; // Convert milliseconds to seconds
       });
-    })..start();
+    })
+      ..start();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    const color = Colors.white;
-
     return MaterialApp(
-        home:Scaffold(
-          backgroundColor: Colors.black,
-            body: ShaderBuilder(
-              assetKey: 'shaders/FractalWorldStar.frag',
-              child: SizedBox(width: size.width,height: size.height),
-                (context,shader,child){
-                    return AnimatedSampler(
-                    (image,size,canvas){
-                      //uSize vec2 (0 to 1)
-                      shader.setFloat(0, size.width);
-                      shader.setFloat(1, size.width);
+        home: Scaffold(
+          appBar: AppBar(title: const Text("Shader")),
+          body: Column(children: [
+            //Buttons
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              FloatingActionButton(
+                  onPressed: () {}, child: const Icon(Icons.arrow_left)),
+              FloatingActionButton(
+                  onPressed: () {}, child: const Icon(Icons.arrow_right)),
+            ]),
 
-                      //uColor_r vec4 (2 to 5)
-                      shader.setFloat(2, color.red.toDouble() / 255);
-                      shader.setFloat(3, color.green.toDouble() / 255);
-                      shader.setFloat(4, color.blue.toDouble() / 255);
-                      shader.setFloat(5, color.alpha.toDouble() / 255);
+            //Shader canvas
+            SizedBox(
+              height: MediaQuery.of(context).size.height - 136,
+              child : Stack(children: [
+                  CustomPaint(
+                  size: Size(MediaQuery.of(context).size.width,
+                      MediaQuery.of(context).size.height),
+                  painter: MyPainter(
+                    Colors.white,
+                    shader: fragmentProgram.fragmentShader(),
+                    time: _time,
+                    posX: posX,
+                    posY: posY,
+                  ),
+                ),
+                GestureDetector(
+                    onPanUpdate: onPanUpdate,
+                    child: Positioned.fill(child: Container(color: Colors.transparent))
+                ),
 
-                      //uTime float (6)
-                      shader.setFloat(6, _time);
+              ])),
 
-                      //uTapOffset vec2 (7 - 8)
-                      shader.setFloat(7, posX);
-                      shader.setFloat(8, posY);
 
-                      canvas.drawPaint(Paint()..shader = shader);
-                      },
-                      child: GestureDetector(
-                        onPanUpdate: onPanUpdate,
-                        onTapDown: (TapDownDetails details) => onTapDown(context, details),
-                        child: Stack(fit: StackFit.expand, children: <Widget>[
-                          Container(color: Colors.white),
-                          Positioned(
-                            left: posX,
-                            top: posY,
-                            child: child!,
-                          )
-                        ]),
-                      ),
-                    );
-            })
-      ));
+
+      ]),
+    ));
+  }
+}
+
+class MyPainter extends CustomPainter {
+  MyPainter(this.color, {
+    required this.shader, required this.time,
+    required this.posX, required this.posY});
+
+  final Color color;
+  final FragmentShader shader;
+  final double time;
+  double posX,posY;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    //uSize vec2 (0 to 1)
+    shader.setFloat(0, size.width);
+    shader.setFloat(1, size.height);
+
+    //uColor vec4 (2 - 5)
+    shader.setFloat(2, color.red.toDouble() / 255);
+    shader.setFloat(3, color.green.toDouble() / 255);
+    shader.setFloat(4, color.blue.toDouble() / 255);
+    shader.setFloat(5, color.alpha.toDouble() / 255);
+
+    //uTime float (6)
+    shader.setFloat(6, time);
+
+    //uTapOffset vec2 (7 - 8)
+    shader.setFloat(7, posX);
+    shader.setFloat(8, posY);
+
+    canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, size.height), Paint()..shader = shader);
   }
 
+  @override
+  bool shouldRepaint(MyPainter oldDelegate) => time != oldDelegate.time || posX != oldDelegate.posX || posY != oldDelegate.posY;
 }
