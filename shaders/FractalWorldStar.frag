@@ -5,6 +5,7 @@ precision mediump float;
 uniform vec2 uSize;
 uniform vec4 uColor;
 uniform float uTime;
+uniform vec2 uTapOffset;
 
 out vec4 FragColor;
 
@@ -27,25 +28,30 @@ vec3 palette( float t ) {
 
 void main() {
     vec2 uv = ((FlutterFragCoord() / uSize) * 2.) - 1.;
+    vec2 offset = ((uTapOffset/uSize) * 2.) - 1;
     uv -= vec2(0.,1.);
-    vec2 uvOriginal = uv;
+    uv -= offset - vec2(0.,1.);
+    vec2 uvOriginal = uv * (0.75 + sin(uTime) * 0.25);
     float sdf;
+    vec3 add_colour = palette(uTime);
 
     float void_center = (sdfSphere(uvOriginal,0.25));
     void_center = sin(void_center * 8. - uTime) / 8.;
     void_center = abs(void_center);
     void_center = smoothstep(0.,0.1,void_center);
 
-    for (float i = 0.0; i < 2.0; i++) {
-        uv *= vec2(sdfSquare(uvOriginal));
-        uv = fract(uv * 1.1) - 0.5;
-        sdf = sdfSquare(uv) * exp(-length(uvOriginal));
+    for (float i = 0.0; i < 3.0; i++) {
+        uv *= vec2(sdfSphere(uvOriginal,0.25));
+        uv = fract(uv * 1.5) - 0.5;
+        sdf = sdfSquare(uv * (0.75 - sin(uTime) * 0.25)) * exp(-length(uvOriginal));
 
-        sdf = sin(sdf * 8. - uTime) / 8.;
+        sdf = sin(sdf * 4. - uTime) / 4.;
         sdf = abs(sdf);
         sdf = 0.01/sdf;
+
+        add_colour += palette(uTime) * (sdf / void_center);
     }
 
-    vec4 colorAlphaAdded = vec4((uColor.rgb + vec3(0.4)) * (sdf / void_center), uColor.a);
+    vec4 colorAlphaAdded = vec4((uColor.rgb + add_colour) * (sdf / void_center), void_center);
     FragColor = colorAlphaAdded;
 }
