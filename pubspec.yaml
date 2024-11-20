@@ -25,5 +25,6 @@ flutter:
   uses-material-design: true
 
   shaders:
-    - shaders/FractalWorldStar.frag
+    - shaders/ShaderWorld_0.frag
+    - shaders/ShaderWorld_1.frag
 
