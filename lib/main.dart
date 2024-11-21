@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 late FragmentProgram fragmentProgram;
 
@@ -68,16 +69,19 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-          appBar: AppBar(title: const Text("Shader"), toolbarHeight: 30,centerTitle: true),
+          appBar: AppBar(title: const Text("Shader").animate().fade(delay: 1000.ms).slide()
+              , toolbarHeight: 30,centerTitle: true),
           body: Column(children: [
               //Buttons
                 const Padding(padding: EdgeInsets.all(20.0)),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 FloatingActionButton(
-                    onPressed: () => nextShader(-1), child: const Icon(Icons.arrow_left)),
+                    onPressed: () => nextShader(-1), child: const Icon(Icons.arrow_left)
+                ).animate().fade(delay: 1250.ms).slide(),
                 const Padding(padding: EdgeInsets.all(20.0)),
                 FloatingActionButton(
-                    onPressed: () => nextShader(1), child: const Icon(Icons.arrow_right)),
+                    onPressed: () => nextShader(1), child: const Icon(Icons.arrow_right)
+                ).animate().fade(delay: 1250.ms).slide(),
               ]),
               const Padding(padding: EdgeInsets.all(30.0)),
 
@@ -100,8 +104,9 @@ class MyAppState extends State<MyApp> {
                           onPanUpdate: onPanUpdate,
                           child:Container(color: Colors.transparent))
 
-                          ])),]
-    ),
+                          ])
+              ).animate().fadeIn(delay: 1500.ms).shimmer(),
+          ]),
     )
     );
   }
