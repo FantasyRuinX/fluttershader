@@ -59,7 +59,7 @@ void main() {
         uv = fract(uv * 1.5)-0.5;
 
         float angle = 45 + (i * 45) + spd;
-        uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+        //uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
 
         sdf = sdfSquare(uv) * exp(-length(uvOriginal));
 
@@ -67,7 +67,7 @@ void main() {
         sdf = abs(sdf);
         sdf = 0.01/sdf;
 
-        add_colour = palette(spd) * (sdf);
+        add_colour += palette(spd) * (sdf);
     }
 
     vec3 final_colour = uColor.rgb + add_colour;

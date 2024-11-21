@@ -49,7 +49,7 @@ void main() {
     void_center = abs(void_center);
     void_center = smoothstep(0.,0.1,void_center);
 
-    for (float i = 0.0; i < 3.0; i++) {
+    for (float i = 0.0; i < 4.0; i++) {
 
         float uv_distort = sdfSphere(uvOriginal,0.5);
         uv_distort = sin(uv_distort * 2. - spd) / 2.;
@@ -67,12 +67,11 @@ void main() {
         sdf = abs(sdf);
         sdf = 0.01/sdf;
 
-        add_colour = palette(spd) * (sdf);
+        add_colour += palette(spd) * (sdf);
     }
 
     vec3 final_colour = uColor.rgb + add_colour;
-    //uv = uvOriginal;
-    float final_sdf = sdf;//(0.01/length(uv.y + (sin((uv.x * 2.) + spd)))) + (0.01/length(uv.y + (cos((uv.x * 2.) + spd))));
-    vec4 colorAlphaAdded = vec4(final_colour / final_sdf, uColor.a);
+    float final_sdf = sdf;
+    vec4 colorAlphaAdded = vec4(final_colour * final_sdf, uColor.a);
     FragColor = colorAlphaAdded;
 }
