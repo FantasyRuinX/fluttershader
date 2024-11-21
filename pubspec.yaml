@@ -13,6 +13,7 @@ dependencies:
 
   flutter_shaders: ^0.1.3
   cupertino_icons: ^1.0.8
+  flutter_animate:
 
 dev_dependencies:
   flutter_test:
