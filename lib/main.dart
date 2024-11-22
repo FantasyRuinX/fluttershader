@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+//Global
 late FragmentProgram fragmentProgram;
+enum ShaderShape {square,circle}
+ShaderShape shaderShape = ShaderShape.square;
 
 Future<void> main() async {
   fragmentProgram =
@@ -51,6 +54,20 @@ class MyAppState extends State<MyApp> {
     });
 
   }
+  //Change Shader shape
+  void changeShaderShape(){
+    setState(() {
+      shaderShape = ShaderShape.values[(shaderShape.index + 1) % ShaderShape.values.length];
+    });
+
+    //Set Shader position to center of canvas at the end of the last frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        posX = MediaQuery.of(context).size.width / 2;
+        posY = MediaQuery.of(context).size.width / 2;
+      });
+    });
+  }
 
   //Get drag position updates
   void onPanUpdate(DragUpdateDetails details) {
@@ -88,7 +105,7 @@ class MyAppState extends State<MyApp> {
     return MaterialApp(
         home: Scaffold(
           appBar: AppBar(title: const Text("Shader").animate().fade(delay: 1000.ms).slide()
-              , toolbarHeight: 30,centerTitle: true),
+              ,toolbarHeight: 30,centerTitle: true,),
           body: Column(children: [
 
                 const Padding(padding: EdgeInsets.all(20.0)),
@@ -97,7 +114,14 @@ class MyAppState extends State<MyApp> {
                     onPressed: () => nextShader(-1), child: const Icon(Icons.arrow_left)
                 ).animate().fade(delay: 1250.ms).slide(),
 
-                const Padding(padding: EdgeInsets.all(20.0)),
+                  const Padding(padding: EdgeInsets.all(10.0)),
+                  SizedBox(
+                    width: 180, height: 50,
+                    child : ElevatedButton(
+                      onPressed: () => changeShaderShape(),
+                      child: const Text('Change Shape'),
+                  )),
+                  const Padding(padding: EdgeInsets.all(10.0)),
 
                 FloatingActionButton(
                     onPressed: () => nextShader(1), child: const Icon(Icons.arrow_right)
@@ -163,11 +187,23 @@ class MyPainter extends CustomPainter {
 
     canvas.drawRect(Rect.fromLTWH(0, -15, size.width, -10), Paint());
 
-    canvas.drawRect(
-        Rect.fromLTWH(0, 0, size.width, size.height), Paint()
-      ..shader = shader);
+    //Set shader render shape
+    switch(shaderShape){
+      case ShaderShape.square :
+        canvas.drawRect(
+           Rect.fromLTWH(0, 0, size.width, size.height), Paint()
+         ..shader = shader);
+        break;
+      case ShaderShape.circle:
+        canvas.drawCircle(
+            Offset(size.width / 2, size.height / 2),
+            (size.width + size.height) / 4, Paint()..shader = shader);
+        break;
+    }
 
     canvas.drawRect(Rect.fromLTWH(0,size.height + 10, size.width,15), Paint());
+
+
   }
 
   @override
