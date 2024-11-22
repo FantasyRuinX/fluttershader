@@ -185,7 +185,7 @@ class MyPainter extends CustomPainter {
     shader.setFloat(7, posX);
     shader.setFloat(8, posY);
 
-    canvas.drawRect(Rect.fromLTWH(0, -15, size.width, -10), Paint());
+    canvas.drawRect(Rect.fromLTWH(0, -20, size.width, -10), Paint()..shader = shader);
 
     //Set shader render shape
     switch(shaderShape){
@@ -201,7 +201,7 @@ class MyPainter extends CustomPainter {
         break;
     }
 
-    canvas.drawRect(Rect.fromLTWH(0,size.height + 10, size.width,15), Paint());
+    canvas.drawRect(Rect.fromLTWH(0,size.height + 10, size.width,20), Paint()..shader = shader);
 
 
   }
