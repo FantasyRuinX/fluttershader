@@ -42,6 +42,14 @@ class MyAppState extends State<MyApp> {
       default : print('Unexpected expected error');
 
     }
+    //Set Shader position to center of canvas at the end of the last frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        posX = MediaQuery.of(context).size.width / 2;
+        posY = MediaQuery.of(context).size.width / 2;
+      });
+    });
+
   }
 
   //Get drag position updates
@@ -55,6 +63,7 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
     //Update the time every frame
     _ticker = Ticker((elapsed) {
       setState(() {
@@ -63,6 +72,15 @@ class MyAppState extends State<MyApp> {
       });
     })
       ..start();
+
+    //Set Shader position to center of canvas at the end of the last frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        posX = MediaQuery.of(context).size.width / 2;
+        posY = MediaQuery.of(context).size.width / 2;
+      });
+    });
+
   }
 
   @override
@@ -72,26 +90,27 @@ class MyAppState extends State<MyApp> {
           appBar: AppBar(title: const Text("Shader").animate().fade(delay: 1000.ms).slide()
               , toolbarHeight: 30,centerTitle: true),
           body: Column(children: [
-              //Buttons
+
                 const Padding(padding: EdgeInsets.all(20.0)),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 FloatingActionButton(
                     onPressed: () => nextShader(-1), child: const Icon(Icons.arrow_left)
                 ).animate().fade(delay: 1250.ms).slide(),
+
                 const Padding(padding: EdgeInsets.all(20.0)),
+
                 FloatingActionButton(
                     onPressed: () => nextShader(1), child: const Icon(Icons.arrow_right)
                 ).animate().fade(delay: 1250.ms).slide(),
-              ]),
-              const Padding(padding: EdgeInsets.all(30.0)),
+                ]),
 
-              //Shader canvas
-              SizedBox(
+                const Padding(padding: EdgeInsets.all(30.0)),
+                SizedBox(
                   height: MediaQuery.of(context).size.height - 300,
                   child: Stack(children: [
                             CustomPaint(
                             size: Size(MediaQuery.of(context).size.width,
-                            MediaQuery.of(context).size.height - 300),
+                            MediaQuery.of(context).size.width),
                         painter: MyPainter(
                           Colors.white,
                           shader: fragmentProgram.fragmentShader(),
@@ -103,7 +122,6 @@ class MyAppState extends State<MyApp> {
                       GestureDetector(
                           onPanUpdate: onPanUpdate,
                           child:Container(color: Colors.transparent))
-
                           ])
               ).animate().fadeIn(delay: 1500.ms).shimmer(),
           ]),
@@ -143,9 +161,13 @@ class MyPainter extends CustomPainter {
     shader.setFloat(7, posX);
     shader.setFloat(8, posY);
 
+    canvas.drawRect(Rect.fromLTWH(0, -15, size.width, -10), Paint());
+
     canvas.drawRect(
         Rect.fromLTWH(0, 0, size.width, size.height), Paint()
       ..shader = shader);
+
+    canvas.drawRect(Rect.fromLTWH(0,size.height + 10, size.width,15), Paint());
   }
 
   @override
