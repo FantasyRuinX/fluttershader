@@ -120,7 +120,7 @@ class MyAppState extends State<MyApp> {
                     child : ElevatedButton(
                       onPressed: () => changeShaderShape(),
                       child: const Text('Change Shape'),
-                  )),
+                  )).animate(delay: 1250.ms).fade(),
                   const Padding(padding: EdgeInsets.all(10.0)),
 
                 FloatingActionButton(
