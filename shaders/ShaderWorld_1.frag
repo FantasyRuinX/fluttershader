@@ -1,6 +1,6 @@
 #version 460 core
 #include <flutter/runtime_effect.glsl>
-precision mediump float;
+precision lowp float;
 
 uniform vec2 uSize;
 uniform vec4 uColor;
@@ -41,7 +41,7 @@ void main() {
 
     vec2 uvOriginal = uv;// * (0.75 + sin(uTime) * 0.25);
     float sdf;
-    float spd = uTime * 0.5;
+    float spd = uTime * 2.;
     vec3 add_colour = palette(spd);
 
     float void_center = (sdfSphere(uvOriginal,0.25));
@@ -49,14 +49,13 @@ void main() {
     void_center = abs(void_center);
     void_center = smoothstep(0.,0.1,void_center);
 
-    for (float i = 0.0; i < 4.0; i++) {
+    float uv_distort = sdfSphere(uvOriginal,0.5);
+    uv_distort = sin(uv_distort * 2. - spd) / 2.;
+    uv_distort = 0.5/uv_distort;
+    uv /= uv_distort;
 
-        float uv_distort = sdfSphere(uvOriginal,0.5);
-        uv_distort = sin(uv_distort * 2. - spd) / 2.;
-        uv_distort = 0.5/uv_distort;
-        uv /= uv_distort;
-
-        uv = fract(uv * 1.5)-0.5;
+    for (float i = 0.0; i < 5.0; i++) {
+        uv = fract(uv * 1.25)-0.5;
 
         float angle = 45 + (i * 45) + spd;
         uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
