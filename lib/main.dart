@@ -5,12 +5,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 //Global
 late FragmentProgram fragmentProgram;
-enum ShaderShape {square,circle}
+
+enum ShaderShape { square, circle }
+
 ShaderShape shaderShape = ShaderShape.square;
 
 Future<void> main() async {
   fragmentProgram =
-  await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
+      await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
   runApp(const MyApp());
 }
 
@@ -31,40 +33,43 @@ class MyAppState extends State<MyApp> {
   //Next shader
   Future<void> nextShader(int indexAdd) async {
     shaderIndex += indexAdd;
-    if (shaderIndex < 0 || shaderIndex > 1) {shaderIndex = 0;}
+    if (shaderIndex < 0 || shaderIndex > 1) {
+      shaderIndex = 0;
+    }
 
     switch (shaderIndex) {
-      case 0 :
+      case 0:
         fragmentProgram =
-        await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
+            await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
         break;
-      case 1 :
+      case 1:
         fragmentProgram =
-        await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
+            await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
         break;
-      default : print('Unexpected expected error');
-
+      default:
+        print('Unexpected expected error');
     }
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        posX = MediaQuery.of(context).size.width / 2;
-        posY = MediaQuery.of(context).size.width / 2;
+        posX = MediaQuery.sizeOf(context).width / 2;
+        posY = MediaQuery.sizeOf(context).width / 2;
       });
     });
-
   }
+
   //Change Shader shape
-  void changeShaderShape(){
+  void changeShaderShape() {
     setState(() {
-      shaderShape = ShaderShape.values[(shaderShape.index + 1) % ShaderShape.values.length];
+      shaderShape = ShaderShape
+          .values[(shaderShape.index + 1) % ShaderShape.values.length];
     });
 
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        posX = MediaQuery.of(context).size.width / 2;
-        posY = MediaQuery.of(context).size.width / 2;
+        posX = MediaQuery.sizeOf(context).width / 2;
+        posY = MediaQuery.sizeOf(context).width / 2;
       });
     });
   }
@@ -84,8 +89,7 @@ class MyAppState extends State<MyApp> {
     //Update the time every frame
     _ticker = Ticker((elapsed) {
       setState(() {
-        _time =
-            elapsed.inMilliseconds / 1000.0; // Convert milliseconds to seconds
+        _time = elapsed.inMilliseconds / 10000.0;
       });
     })
       ..start();
@@ -93,73 +97,81 @@ class MyAppState extends State<MyApp> {
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        posX = MediaQuery.of(context).size.width / 2;
-        posY = MediaQuery.of(context).size.width / 2;
+        posX = MediaQuery.sizeOf(context).width / 2;
+        posY = MediaQuery.sizeOf(context).width / 2;
       });
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-          appBar: AppBar(title: const Text("Shader").animate().fade(delay: 1000.ms).slide()
-              ,toolbarHeight: 30,centerTitle: true,),
-          body: Column(children: [
-
-                const Padding(padding: EdgeInsets.all(20.0)),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                FloatingActionButton(
-                    onPressed: () => nextShader(-1), child: const Icon(Icons.arrow_left)
-                ).animate().fade(delay: 1250.ms).slide(),
-
-                  const Padding(padding: EdgeInsets.all(10.0)),
-                  SizedBox(
-                    width: 180, height: 50,
-                    child : ElevatedButton(
-                      onPressed: () => changeShaderShape(),
-                      child: const Text('Change Shape'),
-                  )).animate(delay: 1250.ms).fade(),
-                  const Padding(padding: EdgeInsets.all(10.0)),
-
-                FloatingActionButton(
-                    onPressed: () => nextShader(1), child: const Icon(Icons.arrow_right)
-                ).animate().fade(delay: 1250.ms).slide(),
-                ]),
-
-                const Padding(padding: EdgeInsets.all(30.0)),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height - 300,
-                  child: Stack(children: [
-                            CustomPaint(
-                            size: Size(MediaQuery.of(context).size.width,
-                            MediaQuery.of(context).size.width),
-                        painter: MyPainter(
-                          Colors.white,
-                          shader: fragmentProgram.fragmentShader(),
-                          time: _time,
-                          posX: posX,
-                          posY: posY,
-                        ),
-                      ),
-                      GestureDetector(
-                          onPanUpdate: onPanUpdate,
-                          child:Container(color: Colors.transparent))
-                          ])
-              ).animate().fadeIn(delay: 1500.ms).shimmer(),
-          ]),
-    )
-    );
+      appBar: AppBar(
+        title: const Text("Shader", style: TextStyle(color: Colors.white))
+            .animate()
+            .fade(delay: 1000.ms)
+            .slide(),
+        toolbarHeight: 30,
+        centerTitle: true,
+        backgroundColor: Colors.black,
+      ),
+      backgroundColor: Colors.black,
+      body: Column(children: [
+        const Padding(padding: EdgeInsets.all(20.0)),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          FloatingActionButton(
+                  onPressed: () => nextShader(-1),
+                  child: const Icon(Icons.arrow_left))
+              .animate()
+              .fade(delay: 1250.ms)
+              .slide(),
+          const Padding(padding: EdgeInsets.all(10.0)),
+          SizedBox(
+              width: 180,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () => changeShaderShape(),
+                child: const Text('Change Shape'),
+              )).animate(delay: 1250.ms).fade(),
+          const Padding(padding: EdgeInsets.all(10.0)),
+          FloatingActionButton(
+                  onPressed: () => nextShader(1),
+                  child: const Icon(Icons.arrow_right))
+              .animate()
+              .fade(delay: 1250.ms)
+              .slide(),
+        ]),
+        const Padding(padding: EdgeInsets.all(30.0)),
+        SizedBox(
+            height: MediaQuery.of(context).size.height - 300,
+            child: Stack(children: [
+              CustomPaint(
+                size: Size(MediaQuery.sizeOf(context).width,
+                    MediaQuery.sizeOf(context).width),
+                painter: MyPainter(
+                  Colors.white,
+                  shader: fragmentProgram.fragmentShader(),
+                  time: _time,
+                  posX: posX,
+                  posY: posY,
+                ),
+              ),
+              GestureDetector(
+                  onPanUpdate: onPanUpdate,
+                  child: Container(color: Colors.transparent))
+            ])).animate().fadeIn(delay: 1500.ms).shimmer(),
+      ]),
+    ));
   }
 }
 
 class MyPainter extends CustomPainter {
   MyPainter(this.color,
       {required this.shader,
-        required this.time,
-        required this.posX,
-        required this.posY});
+      required this.time,
+      required this.posX,
+      required this.posY});
 
   final Color color;
   final FragmentShader shader;
@@ -185,30 +197,25 @@ class MyPainter extends CustomPainter {
     shader.setFloat(7, posX);
     shader.setFloat(8, posY);
 
-    canvas.drawRect(Rect.fromLTWH(0, -20, size.width, -10), Paint()..shader = shader);
+    canvas.drawRect(
+        Rect.fromLTWH(0, -10, size.width, -20), Paint()..shader = shader);
 
     //Set shader render shape
-    switch(shaderShape){
-      case ShaderShape.square :
-        canvas.drawRect(
-           Rect.fromLTWH(0, 0, size.width, size.height), Paint()
-         ..shader = shader);
+    switch (shaderShape) {
+      case ShaderShape.square:
+        canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
+            Paint()..shader = shader);
         break;
       case ShaderShape.circle:
-        canvas.drawCircle(
-            Offset(size.width / 2, size.height / 2),
+        canvas.drawCircle(Offset(size.width / 2, size.height / 2),
             (size.width + size.height) / 4, Paint()..shader = shader);
         break;
     }
 
-    canvas.drawRect(Rect.fromLTWH(0,size.height + 10, size.width,20), Paint()..shader = shader);
-
-
+    canvas.drawRect(Rect.fromLTWH(0, size.height + 10, size.width, 20),
+        Paint()..shader = shader);
   }
 
   @override
-  bool shouldRepaint(MyPainter oldDelegate) =>
-      time != oldDelegate.time ||
-          posX != oldDelegate.posX ||
-          posY != oldDelegate.posY;
+  bool shouldRepaint(MyPainter oldDelegate) => time != oldDelegate.time;
 }
