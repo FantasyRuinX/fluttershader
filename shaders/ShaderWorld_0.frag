@@ -3,7 +3,6 @@
 precision lowp float;
 
 uniform vec2 uSize;
-uniform vec4 uColor;
 uniform float uTime;
 uniform vec2 uTapOffset;
 

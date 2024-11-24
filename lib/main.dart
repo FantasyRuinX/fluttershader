@@ -110,8 +110,7 @@ class MyAppState extends State<MyApp> {
       appBar: AppBar(
         title: const Text("Shader", style: TextStyle(color: Colors.white))
             .animate()
-            .fade(delay: 1000.ms)
-            .slide(),
+            .fade(delay: 1000.ms),
         toolbarHeight: 30,
         centerTitle: true,
         backgroundColor: Colors.black,
@@ -150,7 +149,6 @@ class MyAppState extends State<MyApp> {
                 size: Size(MediaQuery.sizeOf(context).width,
                     MediaQuery.sizeOf(context).width),
                 painter: MyPainter(
-                  Colors.white,
                   shader: fragmentProgram.fragmentShader(),
                   time: _time,
                   posX: posX,
@@ -167,13 +165,13 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyPainter extends CustomPainter {
-  MyPainter(this.color,
+  MyPainter(
       {required this.shader,
       required this.time,
       required this.posX,
       required this.posY});
 
-  final Color color;
+  //final Color color;
   final FragmentShader shader;
   final double time;
   double posX, posY;
@@ -184,18 +182,12 @@ class MyPainter extends CustomPainter {
     shader.setFloat(0, size.width);
     shader.setFloat(1, size.height);
 
-    //uColor vec4 (2 - 5)
-    shader.setFloat(2, color.red.toDouble() / 255);
-    shader.setFloat(3, color.green.toDouble() / 255);
-    shader.setFloat(4, color.blue.toDouble() / 255);
-    shader.setFloat(5, color.alpha.toDouble() / 255);
+    //uTime float (2)
+    shader.setFloat(2, time);
 
-    //uTime float (6)
-    shader.setFloat(6, time);
-
-    //uTapOffset vec2 (7 - 8)
-    shader.setFloat(7, posX);
-    shader.setFloat(8, posY);
+    //uTapOffset vec2 (3 - 4)
+    shader.setFloat(3, posX);
+    shader.setFloat(4, posY);
 
     canvas.drawRect(
         Rect.fromLTWH(0, -10, size.width, -20), Paint()..shader = shader);

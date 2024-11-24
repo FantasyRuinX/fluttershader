@@ -188,10 +188,10 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-11-24T14:47:45.451588Z",
+  "generated": "2024-11-24T19:09:52.200915Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///home/sammy/flutter-development/flutter",
-  "flutterVersion": "3.24.4",
+  "flutterVersion": "3.24.5",
   "pubCache": "file:///home/sammy/.pub-cache"
 }
