@@ -14,7 +14,7 @@ float sdfSphere(vec2 uv, float size){
 }
 
 float sdfSquare(vec2 uv){
-    return length(uv.x * uv.y) + length(uv.x) + length(uv.y);
+    return max(abs(uv.x), abs(uv.y)) - 0.5;
 }
 
 float sdfLineWave(vec2 uv,float spd,float thickness,float frequency,float amplitude,float angle){
@@ -40,26 +40,38 @@ void main() {
     uv -= offset - vec2(0.,1.);
 
     vec2 uvOriginal = uv;
-    float sdf;
     float spd = uTime * 4.;
-    vec3 add_colour = palette(spd);
+    float sdf = sdfSquare(uv);
 
-    float uv_distort = sdfSphere(uvOriginal,0.5);
-    uv_distort = sin(uv_distort * 2. - spd) / 2.;
-    uv_distort = 0.5/uv_distort;
+    vec3 add_colour = palette(sdf + spd);
+
+    sdf = sin(sdf * 8. - spd) / 8.;
+    sdf = abs(sdf);
+    sdf = 0.02/sdf;
+
+    add_colour *= sdf;
+
+    /*
+    vec3 add_colour = palette(length(uv) + (spd/2.));
+
+    //float uv_distort = sdfSphere(uvOriginal,0.5);
+    //uv_distort = sin(uv_distort * 2. - spd) / 2.;
+    //uv_distort = 0.5/uv_distort;
     //uv /= uv_distort;
 
-    for (float i = 0.0; i < 3.0; i++) {
+    //for (float i = 0.0; i < 3.0; i++) {
         uv = fract(uv * 1.25)-0.5;
 
         sdf = sdfSquare(uv) * exp(-length(uvOriginal));
         sdf = sin(sdf * 2. - spd) / 2.;
         sdf = abs(sdf);
         sdf = 0.02/sdf;
+        //sdf -= pow(0.75/length(uvOriginal),5.);
 
-        add_colour += palette(spd) * (sdf);
-    }
-
-    vec4 colorAlphaAdded = vec4((uColor.rgb + add_colour) * (sdf), uColor.a);
+        add_colour += (sdf);
+    //}
+*/
+    vec3 final_colour = (add_colour);
+    vec4 colorAlphaAdded = vec4(final_colour, uColor.a);
     FragColor = colorAlphaAdded;
 }
