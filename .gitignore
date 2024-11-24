@@ -1,2 +1,7 @@
 build/
 .idea/
+ios/
+linux/
+macos/
+web/
+windows/
