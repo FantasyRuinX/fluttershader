@@ -4,15 +4,17 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 //Global
-late FragmentProgram fragmentProgram;
+late FragmentProgram currentShader,fragmentProgram_0,fragmentProgram_1;
 
 enum ShaderShape { square, circle }
 
 ShaderShape shaderShape = ShaderShape.square;
 
 Future<void> main() async {
-  fragmentProgram =
-      await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
+  fragmentProgram_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
+  fragmentProgram_1 = await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
+
+  currentShader = fragmentProgram_0;
   runApp(const MyApp());
 }
 
@@ -29,31 +31,24 @@ class MyAppState extends State<MyApp> {
   double posY = 0.0;
   int shaderIndex = 0;
   late Ticker _ticker;
+  late Size screenSize = MediaQuery.sizeOf(context);
 
   //Next shader
   Future<void> nextShader(int indexAdd) async {
     shaderIndex += indexAdd;
-    if (shaderIndex < 0 || shaderIndex > 1) {
-      shaderIndex = 0;
-    }
+    if (shaderIndex > 1) {shaderIndex = 0;}
+    if (shaderIndex < 0) {shaderIndex = 1;}
 
     switch (shaderIndex) {
-      case 0:
-        fragmentProgram =
-            await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
-        break;
-      case 1:
-        fragmentProgram =
-            await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
-        break;
-      default:
-        print('Unexpected expected error');
+      case 0: currentShader = fragmentProgram_0; break;
+      case 1: currentShader = fragmentProgram_1; break;
+      default: print('Unexpected expected error');
     }
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        posX = MediaQuery.sizeOf(context).width / 2;
-        posY = MediaQuery.sizeOf(context).width / 2;
+        posX = screenSize.width / 2;
+        posY = screenSize.width / 2;
       });
     });
   }
@@ -68,8 +63,8 @@ class MyAppState extends State<MyApp> {
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        posX = MediaQuery.sizeOf(context).width / 2;
-        posY = MediaQuery.sizeOf(context).width / 2;
+        posX = screenSize.width / 2;
+        posY = screenSize.width / 2;
       });
     });
   }
@@ -97,8 +92,8 @@ class MyAppState extends State<MyApp> {
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        posX = MediaQuery.sizeOf(context).width / 2;
-        posY = MediaQuery.sizeOf(context).width / 2;
+        posX = screenSize.width / 2;
+        posY = screenSize.width / 2;
       });
     });
   }
@@ -121,10 +116,7 @@ class MyAppState extends State<MyApp> {
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FloatingActionButton(
                   onPressed: () => nextShader(-1),
-                  child: const Icon(Icons.arrow_left))
-              .animate()
-              .fade(delay: 1250.ms)
-              .slide(),
+                  child: const Icon(Icons.arrow_left)),
           const Padding(padding: EdgeInsets.all(10.0)),
           SizedBox(
               width: 180,
@@ -132,24 +124,22 @@ class MyAppState extends State<MyApp> {
               child: ElevatedButton(
                 onPressed: () => changeShaderShape(),
                 child: const Text('Change Shape'),
-              )).animate(delay: 1250.ms).fade(),
+              )),
           const Padding(padding: EdgeInsets.all(10.0)),
           FloatingActionButton(
                   onPressed: () => nextShader(1),
                   child: const Icon(Icons.arrow_right))
-              .animate()
-              .fade(delay: 1250.ms)
-              .slide(),
-        ]),
+        ]).animate()
+            .fade(delay: 1250.ms)
+            .slide(),
         const Padding(padding: EdgeInsets.all(30.0)),
         SizedBox(
-            height: MediaQuery.of(context).size.height - 300,
+            height: screenSize.height - 300,
             child: Stack(children: [
               CustomPaint(
-                size: Size(MediaQuery.sizeOf(context).width,
-                    MediaQuery.sizeOf(context).width),
+                size: Size(screenSize.width,screenSize.width),
                 painter: MyPainter(
-                  shader: fragmentProgram.fragmentShader(),
+                  shader: currentShader.fragmentShader(),
                   time: _time,
                   posX: posX,
                   posY: posY,
