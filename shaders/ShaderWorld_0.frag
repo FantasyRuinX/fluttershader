@@ -13,13 +13,13 @@ float sdfSphere(vec2 uv, float size){
     return length(uv) - size;
 }
 
-float sdfSquare(vec2 uv){
+float sdfSquare(vec2 uv,float angle){
+    uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
     return max(abs(uv.x), abs(uv.y)) - 0.5;
 }
 
-float sdfLineWave(vec2 uv,float spd,float thickness,float frequency,float amplitude,float angle){
-    uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
-    return thickness / length(uv.y + (cos((uv.x * frequency) + spd) * amplitude));
+float sdfHexagon(vec2 uv){
+    return (length(uv.y - uv.x) + length(uv.y + uv.x) + length( uv.x));
 }
 
 vec3 palette( float t ) {
@@ -41,37 +41,29 @@ void main() {
 
     vec2 uvOriginal = uv;
     float spd = uTime * 4.;
-    float sdf = sdfSquare(uv);
+    float sdf;
+    vec3 add_colour;
+    vec3 final_colour = vec3(0.);
 
-    vec3 add_colour = palette(sdf + spd);
+    float uv_distort = sdfSphere(uvOriginal,0.5);
+    uv_distort = sin(uv_distort * 2. - spd) / 2.;
+    uv_distort = 0.5/uv_distort;
+    uv /= uv_distort;
 
-    sdf = sin(sdf * 8. - spd) / 8.;
-    sdf = abs(sdf);
-    sdf = 0.02/sdf;
+    for (float i = 0.0; i < 4.0; i++) {
 
-    add_colour *= sdf;
+        uv = fract(uv * 1.5)-0.5;
+        sdf = sdfHexagon(uv) * exp(-sdfHexagon(uvOriginal));
 
-    /*
-    vec3 add_colour = palette(length(uv) + (spd/2.));
+        add_colour = palette(sdfHexagon(uvOriginal) + spd);
 
-    //float uv_distort = sdfSphere(uvOriginal,0.5);
-    //uv_distort = sin(uv_distort * 2. - spd) / 2.;
-    //uv_distort = 0.5/uv_distort;
-    //uv /= uv_distort;
-
-    //for (float i = 0.0; i < 3.0; i++) {
-        uv = fract(uv * 1.25)-0.5;
-
-        sdf = sdfSquare(uv) * exp(-length(uvOriginal));
-        sdf = sin(sdf * 2. - spd) / 2.;
+        sdf = sin(sdf * 8. + spd) / 8.;
         sdf = abs(sdf);
-        sdf = 0.02/sdf;
-        //sdf -= pow(0.75/length(uvOriginal),5.);
+        sdf = pow(0.01/sdf,2.);
 
-        add_colour += (sdf);
-    //}
-*/
-    vec3 final_colour = (add_colour);
-    vec4 colorAlphaAdded = vec4(final_colour, uColor.a);
+        final_colour += add_colour * sdf;
+    }
+
+    vec4 colorAlphaAdded = vec4(final_colour,1.);
     FragColor = colorAlphaAdded;
 }
