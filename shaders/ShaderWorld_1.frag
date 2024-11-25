@@ -12,6 +12,16 @@ float sdfSphere(vec2 uv, float size){
     return length(uv) - size;
 }
 
+float sdfFlower(vec2 uv,float angle,float size,float thickness){
+
+    uv *= mat2(cos(-angle),-sin(-angle),sin(-angle),cos(-angle));
+    float d = pow(length(uv.x * uv.y),0.5);
+    d /= length(uv.y - uv.x) + length(uv.y + uv.x);
+    d -= length(uv / size);
+
+    return abs(d) / thickness;
+}
+
 float sdfSquare(vec2 uv,float angle){
     uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
     return max(abs(uv.x), abs(uv.y)) - 0.5;
@@ -39,17 +49,15 @@ void main() {
     float spd = uTime * 2.;
     vec3 final_colour = vec3(0.);
 
-    float uv_distort = sdfSphere(uvOriginal,0.5);
-    uv_distort = sin(uv_distort * 2. - spd) / 2.;
-    uv_distort = 0.5/uv_distort;
-    uv /= uv_distort;
-
     for (float i = 0.0; i < 4.0; i++) {
         uv = fract(uv * 1.5)-0.5;
 
-        float angle = 45 + (i * 45) + spd;
-        uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+        float uv_distort = sdfSphere(uvOriginal,0.);
+        uv_distort = sin(uv_distort * 2. - spd) / 2.;
+        uv_distort = 0.5/uv_distort;
+        uv /= uv_distort;
 
+        float oldSdf = sdf;
         sdf = sdfSquare(uv,-spd) * exp(-sdfSquare(uvOriginal,-spd));
         vec3 add_colour = palette(sdf + spd);
 
@@ -57,7 +65,7 @@ void main() {
         sdf = abs(sdf);
         sdf = 0.01/sdf;
 
-        final_colour += add_colour * sdf;
+        final_colour += add_colour * max(oldSdf,abs(0.01/sdfSquare(uv,-spd)));
     }
 
     vec4 colorAlphaAdded = vec4(final_colour, 1.);

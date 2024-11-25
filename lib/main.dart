@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 //Global
-late FragmentProgram currentShader,fragmentProgram_0,fragmentProgram_1;
+late FragmentProgram currentShader,fragmentProgram_0,fragmentProgram_1,fragmentProgram_2;
 
 enum ShaderShape { square, circle }
 
@@ -13,6 +13,7 @@ ShaderShape shaderShape = ShaderShape.square;
 Future<void> main() async {
   fragmentProgram_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
   fragmentProgram_1 = await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
+  fragmentProgram_2 = await FragmentProgram.fromAsset('shaders/ShaderWorld_2.frag');
 
   currentShader = fragmentProgram_0;
   runApp(const MyApp());
@@ -36,12 +37,13 @@ class MyAppState extends State<MyApp> {
   //Next shader
   Future<void> nextShader(int indexAdd) async {
     shaderIndex += indexAdd;
-    if (shaderIndex > 1) {shaderIndex = 0;}
-    if (shaderIndex < 0) {shaderIndex = 1;}
+    if (shaderIndex > 2) {shaderIndex = 0;}
+    if (shaderIndex < 0) {shaderIndex = 2;}
 
     switch (shaderIndex) {
       case 0: currentShader = fragmentProgram_0; break;
       case 1: currentShader = fragmentProgram_1; break;
+      case 2: currentShader = fragmentProgram_2; break;
       default: print('Unexpected expected error');
     }
     //Set Shader position to center of canvas at the end of the last frame

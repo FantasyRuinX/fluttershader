@@ -49,7 +49,7 @@ void main() {
     uv_distort = 0.5/uv_distort;
     uv /= uv_distort;
 
-    for (float i = 0.0; i < 4.0; i++) {
+    for (float i = 0.0; i < 3.0; i++) {
 
         uv = fract(uv * 1.5)-0.5;
         sdf = sdfHexagon(uv) * exp(-sdfHexagon(uvOriginal));
