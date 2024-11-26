@@ -6,33 +6,24 @@ uniform vec2 uSize;
 uniform float uTime;
 uniform vec2 uTapOffset;
 
+//palette variables
+uniform vec3 a, b, c, d;
+//
+
 out vec4 FragColor;
 
 float sdfSphere(vec2 uv, float size){
     return length(uv) - size;
 }
 
-float sdfFlower(vec2 uv,float angle,float size,float thickness){
-
-    uv *= mat2(cos(-angle),-sin(-angle),sin(-angle),cos(-angle));
-    float d = pow(length(uv.x * uv.y),0.5);
-    d /= length(uv.y - uv.x) + length(uv.y + uv.x);
-    d -= length(uv / size);
-
-    return abs(d) / thickness;
-}
-
 float sdfSquare(vec2 uv,float angle){
-    uv *= mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    uv *= mat2(cosA, -sinA, sinA, cosA);
     return max(abs(uv.x), abs(uv.y)) - 0.5;
 }
 
 vec3 palette( float t ) {
-    vec3 a = vec3(0.5, 0.5, 0.5);
-    vec3 b = vec3(0.5, 0.5, 0.5);
-    vec3 c = vec3(1.0, 1.0, 1.0);
-    vec3 d = vec3(0.263,0.416,0.557);
-
     return a + b*cos( 6.28318*(c*t+d) );
 }
 
@@ -46,10 +37,10 @@ void main() {
 
     vec2 uvOriginal = uv;// * (0.75 + sin(uTime) * 0.25);
     float sdf;
-    float spd = uTime * 2.;
+    float spd = uTime * 3.;
     vec3 final_colour = vec3(0.);
 
-    for (float i = 0.0; i < 4.0; i++) {
+    for (float i = 0.0; i < 2.0; i++) {
         uv = fract(uv * 1.5)-0.5;
 
         float uv_distort = sdfSphere(uvOriginal,0.);
@@ -57,15 +48,14 @@ void main() {
         uv_distort = 0.5/uv_distort;
         uv /= uv_distort;
 
-        float oldSdf = sdf;
-        sdf = sdfSquare(uv,-spd) * exp(-sdfSquare(uvOriginal,-spd));
+        sdf = max(abs(uv.x), abs(uv.y)) - 0.5 * (-max(abs(uv.x), abs(uv.y)) - 0.5);
         vec3 add_colour = palette(sdf + spd);
 
         sdf = sin(sdf * 4. - spd) / 4.;
         sdf = abs(sdf);
         sdf = 0.01/sdf;
 
-        final_colour += add_colour * max(oldSdf,abs(0.01/sdfSquare(uv,-spd)));
+        final_colour += add_colour * max(sdf,abs(0.01/sdfSquare(uv,-spd)));
     }
 
     vec4 colorAlphaAdded = vec4(final_colour, 1.);

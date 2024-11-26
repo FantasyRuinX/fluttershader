@@ -4,18 +4,18 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 //Global
-late FragmentProgram currentShader,fragmentProgram_0,fragmentProgram_1,fragmentProgram_2;
+late FragmentProgram currentShader,frag_0,frag_1,frag_2;
 
 enum ShaderShape { square, circle }
 
 ShaderShape shaderShape = ShaderShape.square;
 
 Future<void> main() async {
-  fragmentProgram_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
-  fragmentProgram_1 = await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
-  fragmentProgram_2 = await FragmentProgram.fromAsset('shaders/ShaderWorld_2.frag');
+  frag_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
+  frag_1 = await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
+  frag_2 = await FragmentProgram.fromAsset('shaders/ShaderWorld_2.frag');
 
-  currentShader = fragmentProgram_0;
+  currentShader = frag_0;
   runApp(const MyApp());
 }
 
@@ -41,10 +41,9 @@ class MyAppState extends State<MyApp> {
     if (shaderIndex < 0) {shaderIndex = 2;}
 
     switch (shaderIndex) {
-      case 0: currentShader = fragmentProgram_0; break;
-      case 1: currentShader = fragmentProgram_1; break;
-      case 2: currentShader = fragmentProgram_2; break;
-      default: print('Unexpected expected error');
+      case 0: currentShader = frag_0; break;
+      case 1: currentShader = frag_1; break;
+      case 2: currentShader = frag_2; break;
     }
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -159,6 +158,9 @@ class MyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+
+    final paint = Paint()..shader = shader;
+
     //uSize vec2 (0 to 1)
     shader.setFloat(0, size.width);
     shader.setFloat(1, size.height);
@@ -170,15 +172,27 @@ class MyPainter extends CustomPainter {
     shader.setFloat(3, posX);
     shader.setFloat(4, posY);
 
+    //Palette variables (5 - )
+    for (int i = 0; i < 3; i ++) {
+      shader.setFloat(5 + i, 0.5);//a
+      shader.setFloat(8 + i, 0.5);//b
+      shader.setFloat(11 + i, 1.0);//c
+    }
+
+    //d
+    shader.setFloat(14, 0.263);
+    shader.setFloat(15, 0.416);
+    shader.setFloat(16, 0.557);
+    //----
+
     //Set shader render shape
     switch (shaderShape) {
       case ShaderShape.square:
-        canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
-            Paint()..shader = shader);
+        canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
         break;
       case ShaderShape.circle:
         canvas.drawCircle(Offset(size.width / 2, size.height / 2),
-            (size.width + size.height) / 4, Paint()..shader = shader);
+            (size.width + size.height) / 4,paint);
         break;
     }
 
