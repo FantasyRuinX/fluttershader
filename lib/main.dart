@@ -48,35 +48,26 @@ class MyAppState extends State<MyApp> {
     }
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
         posX = screenSize.width / 2;
         posY = screenSize.width / 2;
-      });
     });
   }
 
   //Change Shader shape
   void changeShaderShape() {
-    setState(() {
-      shaderShape = ShaderShape
-          .values[(shaderShape.index + 1) % ShaderShape.values.length];
-    });
+    shaderShape = ShaderShape.values[(shaderShape.index + 1) % ShaderShape.values.length];
 
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
         posX = screenSize.width / 2;
         posY = screenSize.width / 2;
-      });
     });
   }
 
   //Get drag position updates
   void onPanUpdate(DragUpdateDetails details) {
-    setState(() {
       posX = details.localPosition.dx;
       posY = details.localPosition.dy;
-    });
   }
 
   @override
@@ -93,10 +84,8 @@ class MyAppState extends State<MyApp> {
 
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
         posX = screenSize.width / 2;
         posY = screenSize.width / 2;
-      });
     });
   }
 
@@ -181,9 +170,6 @@ class MyPainter extends CustomPainter {
     shader.setFloat(3, posX);
     shader.setFloat(4, posY);
 
-    canvas.drawRect(
-        Rect.fromLTWH(0, -10, size.width, -20), Paint()..shader = shader);
-
     //Set shader render shape
     switch (shaderShape) {
       case ShaderShape.square:
@@ -196,8 +182,6 @@ class MyPainter extends CustomPainter {
         break;
     }
 
-    canvas.drawRect(Rect.fromLTWH(0, size.height + 10, size.width, 20),
-        Paint()..shader = shader);
   }
 
   @override
