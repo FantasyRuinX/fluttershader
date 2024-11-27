@@ -10,15 +10,11 @@ uniform vec2 uTapOffset;
 uniform vec3 a, b, c, d;
 //
 
+uniform float index;
+
 out vec4 FragColor;
 
-float sdfSphere(vec2 uv, float size){
-    return length(uv) - size;
-}
-
-float sdfHexagon(vec2 uv){
-    return (length(uv.y - uv.x) + length(uv.y + uv.x) + length( uv.x));
-}
+#include "ShaderSDFs.frag"
 
 vec3 palette( float t ) {
     return a + b*cos( 6.28318*(c*t+d) );
@@ -46,15 +42,18 @@ void main() {
     for (float i = 0.0; i < 2.0; i++) {
 
         uv = fract(uv * 1.5)-0.5;
-        sdf = sdfHexagon(uv) * exp(-sdfHexagon(uvOriginal));
+
+        if (index == 0) {sdf = sdfHexagon(uv) * exp(-sdfHexagon(uvOriginal));}
+        if (index == 1) {sdf = sdfSphere(uv,0.25) * exp(-sdfSphere(uvOriginal,0.25));}
 
         add_colour = palette(sdfHexagon(uvOriginal) + spd);
 
+        float oldsdf = sdf;
         sdf = sin(sdf * 8. + spd) / 8.;
         sdf = abs(sdf);
         sdf = pow(0.025/sdf,2.);
 
-        final_colour += add_colour * sdf;
+        final_colour += add_colour * min(oldsdf,sdf);
     }
 
     vec4 colorAlphaAdded = vec4(final_colour,1.);
