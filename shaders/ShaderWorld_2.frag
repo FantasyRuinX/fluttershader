@@ -11,6 +11,7 @@ uniform vec3 a, b, c, d;
 //
 
 uniform float index;
+uniform float fractal;
 
 out vec4 FragColor;
 
@@ -33,8 +34,8 @@ void main() {
     float spd = uTime * 2.5;
     vec3 final_colour = vec3(0.);
 
-    for (float i = 0.0; i < 2.0; i++) {
-        uv = fract(uv * 1.5)-0.5;
+    for (float i = 0.0; i < 3.0; i++) {
+        uv = fract(uv * fractal)-0.5;
 
         float uv_distort = sdfSphere(uv,0);
         uv_distort = sin(uv_distort * 2. - spd) / 2.;

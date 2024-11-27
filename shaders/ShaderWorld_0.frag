@@ -11,6 +11,7 @@ uniform vec3 a, b, c, d;
 //
 
 uniform float index;
+uniform float fractal;
 
 out vec4 FragColor;
 
@@ -41,7 +42,7 @@ void main() {
 
     for (float i = 0.0; i < 2.0; i++) {
 
-        uv = fract(uv * 1.5)-0.5;
+        uv = fract(uv * fractal)-0.5;
 
         if (index == 0) {sdf = sdfSquare(uv) * exp(-sdfSquare(uvOriginal));}
         else if (index == 1) {sdf = sdfSphere(uv,0.25) * exp(-sdfSphere(uvOriginal,0.25));}
