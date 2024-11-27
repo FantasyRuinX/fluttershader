@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -6,16 +7,16 @@ import 'package:flutter_animate/flutter_animate.dart';
 //Global
 late FragmentProgram currentShader,frag_0,frag_1,frag_2;
 
-enum ShaderShape { square, circle }
-
-ShaderShape shaderShape = ShaderShape.square;
+double shaderShape = 0.0;
 
 Future<void> main() async {
   frag_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
   frag_1 = await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
   frag_2 = await FragmentProgram.fromAsset('shaders/ShaderWorld_2.frag');
 
+  sleep(const Duration(seconds: 2));
   currentShader = frag_0;
+  sleep(const Duration(seconds: 1));
   runApp(const MyApp());
 }
 
@@ -54,8 +55,9 @@ class MyAppState extends State<MyApp> {
 
   //Change Shader shape
   void changeShaderShape() {
-    shaderShape = ShaderShape.values[(shaderShape.index + 1) % ShaderShape.values.length];
-
+    shaderShape += 1.0;
+    if (shaderShape > 3.0) {shaderShape = 0.0;}
+    if (shaderShape < 0.0) {shaderShape = 3.0;}
     //Set Shader position to center of canvas at the end of the last frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
         posX = screenSize.width / 2;
@@ -185,16 +187,10 @@ class MyPainter extends CustomPainter {
     shader.setFloat(16, 0.557);
     //----
 
-    //Set shader render shape
-    switch (shaderShape) {
-      case ShaderShape.square:
-        canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-        break;
-      case ShaderShape.circle:
-        canvas.drawCircle(Offset(size.width / 2, size.height / 2),
-            (size.width + size.height) / 4,paint);
-        break;
-    }
+    //index
+    shader.setFloat(17, shaderShape);
+
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
 
   }
 
