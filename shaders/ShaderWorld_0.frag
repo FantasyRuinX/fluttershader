@@ -43,17 +43,18 @@ void main() {
 
         uv = fract(uv * 1.5)-0.5;
 
-        if (index == 0) {sdf = sdfHexagon(uv) * exp(-sdfHexagon(uvOriginal));}
-        if (index == 1) {sdf = sdfSphere(uv,0.25) * exp(-sdfSphere(uvOriginal,0.25));}
+        if (index == 0) {sdf = sdfSquare(uv) * exp(-sdfSquare(uvOriginal));}
+        else if (index == 1) {sdf = sdfSphere(uv,0.25) * exp(-sdfSphere(uvOriginal,0.25));}
+        else if (index == 2) {sdf = sdfHexagon(uv) * exp(-sdfHexagon(uvOriginal));}
+        else if (index == 3) {sdf = sdfStar(uv) * exp(-sdfStar(uvOriginal));}
 
         add_colour = palette(sdfHexagon(uvOriginal) + spd);
 
-        float oldsdf = sdf;
         sdf = sin(sdf * 8. + spd) / 8.;
         sdf = abs(sdf);
         sdf = pow(0.025/sdf,2.);
 
-        final_colour += add_colour * min(oldsdf,sdf);
+        final_colour += add_colour * sdf;
     }
 
     vec4 colorAlphaAdded = vec4(final_colour,1.);

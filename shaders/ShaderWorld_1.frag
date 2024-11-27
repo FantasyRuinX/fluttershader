@@ -10,18 +10,11 @@ uniform vec2 uTapOffset;
 uniform vec3 a, b, c, d;
 //
 
+uniform float index;
+
 out vec4 FragColor;
 
-float sdfSphere(vec2 uv, float size){
-    return length(uv) - size;
-}
-
-float sdfSquare(vec2 uv,float angle){
-    float cosA = cos(angle);
-    float sinA = sin(angle);
-    uv *= mat2(cosA, -sinA, sinA, cosA);
-    return max(abs(uv.x), abs(uv.y)) - 0.5;
-}
+#include "ShaderSDFs.frag"
 
 vec3 palette( float t ) {
     return a + b*cos( 6.28318*(c*t+d) );
@@ -35,7 +28,7 @@ void main() {
     uv -= vec2(0.,1.);
     uv -= offset - vec2(0.,1.);
 
-    vec2 uvOriginal = uv;// * (0.75 + sin(uTime) * 0.25);
+    vec2 uvOriginal = uv;
     float sdf;
     float spd = uTime * 3.;
     vec3 final_colour = vec3(0.);
@@ -48,7 +41,11 @@ void main() {
         uv_distort = 0.5/uv_distort;
         uv /= uv_distort;
 
-        sdf = max(abs(uv.x), abs(uv.y)) - 0.5 * (-max(abs(uv.x), abs(uv.y)) - 0.5);
+        if (index == 0) {sdf = sdfSquare(uv) * exp(-sdfSquare(uvOriginal));}
+        else if (index == 1) {sdf = sdfSphere(uv,0.25) * exp(-sdfSphere(uvOriginal,0.25));}
+        else if (index == 2) {sdf = sdfHexagon(uv) * exp(-sdfHexagon(uvOriginal));}
+        else if (index == 3) {sdf = sdfStar(uv) * exp(-sdfStar(uvOriginal));}
+
         vec3 add_colour = palette(sdf + spd);
 
         sdf = sin(sdf * 4. - spd) / 4.;
