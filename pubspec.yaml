@@ -29,4 +29,5 @@ flutter:
     - shaders/ShaderWorld_0.frag
     - shaders/ShaderWorld_1.frag
     - shaders/ShaderWorld_2.frag
+    - shaders/ShaderWorld_3.frag
 

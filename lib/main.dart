@@ -5,14 +5,15 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 //Global
-late FragmentProgram currentShader, frag_0, frag_1, frag_2;
+late FragmentProgram currentShader, frag_0, frag_1, frag_2, frag_3;
 
 double shaderShape = 0.0;
 
 Future<void> main() async {
-  frag_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
+  frag_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_3.frag');
   frag_1 = await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
   frag_2 = await FragmentProgram.fromAsset('shaders/ShaderWorld_2.frag');
+  frag_3 = await FragmentProgram.fromAsset('shaders/ShaderWorld_3.frag');
 
   sleep(const Duration(seconds: 2));
   currentShader = frag_0;
@@ -40,11 +41,11 @@ class MyAppState extends State<MyApp> {
   //Next shader
   Future<void> nextShader(int indexAdd) async {
     shaderIndex += indexAdd;
-    if (shaderIndex > 2) {
+    if (shaderIndex > 3) {
       shaderIndex = 0;
     }
     if (shaderIndex < 0) {
-      shaderIndex = 2;
+      shaderIndex = 3;
     }
 
     switch (shaderIndex) {
@@ -56,6 +57,9 @@ class MyAppState extends State<MyApp> {
         break;
       case 2:
         currentShader = frag_2;
+        break;
+      case 3:
+        currentShader = frag_3;
         break;
     }
     //Set Shader position to center of canvas at the end of the last frame
@@ -132,7 +136,7 @@ class MyAppState extends State<MyApp> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () => changeShaderShape(),
-                child: Text('Change Shape'),
+                child: const Text('Change Shape'),
               )),
           const Padding(padding: EdgeInsets.all(10.0)),
           FloatingActionButton(
