@@ -10,7 +10,7 @@ late FragmentProgram currentShader, frag_0, frag_1, frag_2, frag_3;
 double shaderShape = 0.0;
 
 Future<void> main() async {
-  frag_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_3.frag');
+  frag_0 = await FragmentProgram.fromAsset('shaders/ShaderWorld_0.frag');
   frag_1 = await FragmentProgram.fromAsset('shaders/ShaderWorld_1.frag');
   frag_2 = await FragmentProgram.fromAsset('shaders/ShaderWorld_2.frag');
   frag_3 = await FragmentProgram.fromAsset('shaders/ShaderWorld_3.frag');
