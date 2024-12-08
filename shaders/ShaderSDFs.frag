@@ -37,7 +37,7 @@ float sdfSquare3D(vec3 point,float size){
 }
 
 
-float sdOctahedron3D(vec3 p, float s) {
+float sdfOctahedron3D(vec3 p, float s) {
     p = abs(p);
     return (p.x + p.y + p.z - s) * 0.5;
 }
